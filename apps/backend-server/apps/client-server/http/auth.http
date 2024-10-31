@@ -1,0 +1,86 @@
+// 系统登录
+{{
+  console.info("系统登录");
+  console.info($global);
+}}
+
+post {{host}}/system/auth/login
+content-type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123",
+  "captchaid": "{{ $global.captchaid }}",
+  "captchatext": "w0am"
+}
+###
+// 无验证码系统登录
+
+post {{host}}/system/auth/login
+content-type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123",
+}
+###
+// 刷新令牌
+POST {{host}}/system/auth/refresh
+
+HTTP/1.1 401  - Unauthorized
+connection: close
+content-length: 43
+access-control-allow-credentials: true
+access-control-allow-origin: http://localhost:21171
+content-type: application/json; charset=utf-8
+date: Fri, 25 Oct 2024 11:58:26 GMT
+etag: W/"2b-hGShxOkieaAVDloBubJVM+h58D8"
+vary: Origin
+x-powered-by: Express
+###
+// 获取验证码类型
+GET {{host}}/system/auth/captcha/type
+
+HTTP/1.1 200  - OK
+connection: close
+content-length: 43
+access-control-allow-credentials: true
+access-control-allow-origin: http://localhost:21171
+content-type: application/json; charset=utf-8
+date: Fri, 25 Oct 2024 11:58:32 GMT
+etag: W/"2b-9yhiA0uUvA1t3K9MCsKkN1ii824"
+vary: Origin
+x-powered-by: Express
+###
+// 获取验证码
+# @no-cookie-jar
+GET {{host}}/system/auth/captcha
+
+{{
+  $global.captchaId = response.parsedBody.id
+}}
+
+HTTP/1.1 200  - OK
+connection: close
+content-length: 7520
+access-control-allow-credentials: true
+access-control-allow-origin: http://localhost:21171
+content-type: application/json; charset=utf-8
+date: Fri, 25 Oct 2024 12:05:13 GMT
+etag: W/"1d60-8trVUeoaE0aNMTiO0Xzd/awN4lM"
+vary: Origin
+x-powered-by: Express
+###
+# @no-cookie-jar
+GET {{host}}/auth/test
+
+HTTP/1.1 200  - OK
+connection: close
+content-length: 7024
+access-control-allow-credentials: true
+access-control-allow-origin: http://localhost:21171
+content-type: application/json; charset=utf-8
+date: Fri, 25 Oct 2024 11:56:14 GMT
+etag: W/"1b70-ZEtw/P3BiY73VjoJLmGpazmLLV0"
+vary: Origin
+x-powered-by: Express

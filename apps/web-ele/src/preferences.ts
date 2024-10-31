@@ -8,5 +8,14 @@ export const overridesPreferences = defineOverridesPreferences({
   // overrides
   app: {
     name: import.meta.env.VITE_APP_TITLE,
+    enableRefreshToken: true,
+    loginExpiredMode: 'modal',
+  },
+  theme: {
+    mode: 'auto',
+    radius: '0.25',
+  },
+  widget: {
+    languageToggle: false,
   },
 });

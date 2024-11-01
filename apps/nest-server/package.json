@@ -106,7 +106,9 @@
     ],
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
-      "^@app/system(|/.*)$": "<rootDir>/libs/system/src/$1"
+      "^@app/system(|/.*)$": "<rootDir>/libs/system/src/$1",
+      "^@app/framework(|/.*)$": "<rootDir>/libs/framework/src/$1",
+      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1"
     }
   }
 }

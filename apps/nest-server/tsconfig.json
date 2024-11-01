@@ -19,12 +19,30 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/server": ["apps/server/src"],
-      "@app/server/*": ["apps/server/src/*"],
-      "@app/common": ["libs/common/src"],
-      "@app/common/*": ["libs/common/src/*"],
-      "@app/system": ["libs/system/src"],
-      "@app/system/*": ["libs/system/src/*"]
+      "@app/server": [
+        "apps/server/src"
+      ],
+      "@app/server/*": [
+        "apps/server/src/*"
+      ],
+      "@app/common": [
+        "libs/common/src"
+      ],
+      "@app/common/*": [
+        "libs/common/src/*"
+      ],
+      "@app/system": [
+        "libs/system/src"
+      ],
+      "@app/system/*": [
+        "libs/system/src/*"
+      ],
+      "@app/core": [
+        "libs/core/src"
+      ],
+      "@app/core/*": [
+        "libs/core/src/*"
+      ]
     }
   }
 }

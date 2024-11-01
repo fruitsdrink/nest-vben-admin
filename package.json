@@ -47,6 +47,7 @@
     "dev:ele": "pnpm -F @vben/web-ele run dev",
     "dev:naive": "pnpm -F @vben/web-naive run dev",
     "dev:play": "pnpm -F @vben/playground run dev",
+    "dev:ns": "pnpm -F @vben/nest-server run dev",
     "format": "vsh lint --format",
     "lint": "vsh lint",
     "postinstall": "pnpm -r run stub --if-present",

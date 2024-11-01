@@ -5,8 +5,8 @@
       "path": "apps/backend-mock",
     },
     {
-      "name": "@vben/backend-server",
-      "path": "apps/backend-server",
+      "name": "@vben/nest-server",
+      "path": "apps/nest-server",
     },
     {
       "name": "@vben/web-antd",

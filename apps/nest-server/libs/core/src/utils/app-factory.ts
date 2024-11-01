@@ -1,4 +1,4 @@
-import { ModuleMetadata, type INestApplication } from '@nestjs/common';
+import { ModuleMetadata, VersioningType, type INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import chalk from 'chalk';
 import consola from 'consola';
@@ -14,11 +14,14 @@ const createTipInfo = (options: {
   appName: string;
   port: number;
   prefix?: string;
-  version?: number;
+  version?: boolean;
 }): string => {
-  const { appName, port } = options;
+  const { appName, port, prefix, version } = options;
+  const url = `http://localhost:${port}`;
+  const prefixInfo = prefix ? `/${prefix}` : '';
+  const versionInfo = version ? '/v1' : '';
   return `${chalk.green('➜')}  ${chalk.bold(appName)}: ${chalk.cyan(
-    `http://localhost:${port}/api`,
+    `${url}${prefixInfo}${versionInfo}`,
   )}`;
 };
 
@@ -37,6 +40,19 @@ const setup = async (options: SetupOptions): Promise<void> => {
       methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
     });
   }
+
+  // 设置地址前缀
+  if (appConfigService.app.prefix) {
+    app.setGlobalPrefix(appConfigService.app.prefix);
+  }
+
+  if (appConfigService.app.enableVersion) {
+    app.enableVersioning({
+      type: VersioningType.URI,
+      prefix: 'v',
+      defaultVersion: '1',
+    });
+  }
 };
 /**
  * 启动应用实例
@@ -53,7 +69,14 @@ const boot = async (options: BootOptions): Promise<void> => {
   await setup({ app, appConfigService });
 
   await app.listen(appPort, () => {
-    consola.log(createTipInfo({ appName, port: 5321 }));
+    consola.log(
+      createTipInfo({
+        appName,
+        port: appConfigService.app.port,
+        prefix: appConfigService.app.prefix,
+        version: appConfigService.app.enableVersion,
+      }),
+    );
   });
 };
 

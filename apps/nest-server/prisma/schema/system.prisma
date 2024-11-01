@@ -1,30 +1,31 @@
 /// 注册用户来源
 enum REGISTER_SOURCE {
-  SELF // 自己
+  USER // 用户
   SYSTEM // 系统
 }
 
 /// 系统用户
-model User {
-  id                       String          @id @default(cuid()) /// 主键Id
-  username                 String /// 登录帐号
-  password                 String /// 登录密码
-  name                     String /// 姓名
-  pinyin                   String? /// 拼音简码
-  phone                    String? /// 手机号
-  email                    String? /// 邮箱
-  avatar                   String? /// 头像
-  sex                      Int             @default(0) /// 性别 0:未知 1:男 2:女
-  status                   Int             @default(1) /// 状态 1:启用 0:禁用
-  remark                   String? /// 备注
-  sortNo                   Int             @default(0) @map("sort_no") /// 排序号
-  openId                   String?         @map("open_id") /// 微信OpenId
-  refreshToken             String?         @map("refresh_token") /// 刷新Token
-  unionId                  String?         @map("union_id") /// 微信UnionId
-  isChangedDefaultPassword Int             @default(0) @map("is_changed_default_password") /// 是否修改过默认密码 0:否 1:是
-  registerSource           REGISTER_SOURCE @default(SYSTEM) @map("register_source") /// 注册用户来源
-  isVerify                 Int             @default(0) @map("is_verify") /// 是否验证 0:否 1:是
-  isAdmin                  Int             @default(0) @map("is_admin") /// 是否管理员 0:否 1:是
+model SysUser {
+  id             String          @id @default(cuid()) /// 主键Id
+  username       String /// 登录帐号
+  password       String /// 登录密码
+  nickName       String?         @map("nick_name") /// 昵称
+  realName       String?         @map("real_name") /// 真实姓名
+  pinyin         String? /// 拼音简码
+  phone          String? /// 手机号
+  email          String? /// 邮箱
+  avatar         String? /// 头像
+  sex            Int             @default(0) /// 性别 0:未知 1:男 2:女
+  status         Int             @default(1) /// 状态 1:启用 0:禁用
+  remark         String? /// 备注
+  sortNo         Int             @default(0) @map("sort_no") /// 排序号
+  openId         String?         @map("open_id") /// 微信OpenId
+  unionId        String?         @map("union_id") /// 微信UnionId
+  refreshToken   String?         @map("refresh_token") /// 刷新Token
+  isChangedPwd   Int             @default(0) @map("is_changed_pwd") /// 默认密码是否已修改 0:否 1:是
+  registerSource REGISTER_SOURCE @default(SYSTEM) @map("register_source") /// 注册用户来源
+  isVerify       Int             @default(0) @map("is_verify") /// 是否已验证 0:否 1:是
+  isAdmin        Int             @default(0) @map("is_admin") /// 是否管理员 0:否 1:是
 
   createdAt DateTime  @default(now()) @map("created_at") /// 创建时间
   createdBy String?   @map("created_by") /// 创建人
@@ -39,30 +40,15 @@ model User {
 
 /// 系统配置键
 enum SETTINGS_KEY {
-  CAPTCHA_TYPE // 验证码类型
-  CAPTCHA_LENGTH // 验证码长度
-  CAPTCHA_CASE_SENSITIVE // 验证码是否区分大小写
-  CAPTCHA_TTL // 验证码过期时间
-
   REGISTER_ENABLED // 注册是否开启
   REGISTER_VERIFY // 注册是否需要验证
-  REGISTER_CHANGE_PASSWORD // 注册是否需要修改默认密码
-  REGISTER_PASSWORD_STRENGTH // 注册密码强度
 }
 
 /// 系统配置
-model settings {
+model SysSettings {
   id    String       @id @default(cuid()) /// 主键Id
-  key   SETTINGS_KEY /// 键
+  key   SETTINGS_KEY @unique() /// 键
   value String /// 值
 
-  createdAt DateTime  @default(now()) @map("created_at") /// 创建时间
-  createdBy String?   @map("created_by") /// 创建人
-  updatedAt DateTime? @updatedAt @map("updated_at") /// 更新时间
-  updatedBy String?   @map("updated_by") /// 更新人
-  deletedAt BigInt    @default(0) @map("deleted_at") /// 删除时间
-  deletedBy String?   @map("deleted_by") /// 删除人
-
-  @@unique([key, deletedAt])
   @@map("sys_settings")
 }

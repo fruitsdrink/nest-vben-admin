@@ -6,4 +6,4 @@ import { Module } from '@nestjs/common';
 @Module({
   imports: [],
 })
-export class ClientServerModule {}
+export class ServerModule {}

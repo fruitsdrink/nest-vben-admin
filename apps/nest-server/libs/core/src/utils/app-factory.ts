@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import chalk from 'chalk';
 import consola from 'consola';
 import type { SetupOptions, BootOptions } from '../types';
+import { AppConfigService } from '../modules';
 
 /**
  * 创建提示信息
@@ -26,19 +27,32 @@ const createTipInfo = (options: {
  * @param options 配置选项
  */
 const setup = async (options: SetupOptions): Promise<void> => {
-  const { app, port } = options;
+  const { app, appConfigService } = options;
+
+  // 设置是否允许跨域
+  if (appConfigService.app.enableCors && !appConfigService.app.corsOrigin) {
+    app.enableCors({
+      origin: appConfigService.app.corsOrigin,
+      credentials: appConfigService.app.corsCredentials,
+      methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+    });
+  }
 };
 /**
  * 启动应用实例
  * @param options 配置选项
  */
 const boot = async (options: BootOptions): Promise<void> => {
-  const { appName, mainModule } = options;
+  const { appName, mainModule, port } = options;
   const app = await NestFactory.create(mainModule);
 
-  await setup({ app, port: 5321 });
+  const appConfigService = app.get(AppConfigService);
 
-  await app.listen(5321, () => {
+  const appPort = port ?? appConfigService.app.port;
+
+  await setup({ app, appConfigService });
+
+  await app.listen(appPort, () => {
     consola.log(createTipInfo({ appName, port: 5321 }));
   });
 };

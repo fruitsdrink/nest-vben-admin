@@ -3,5 +3,7 @@ import { Module } from '@nestjs/common';
 /**
  * Nest Server 核心模块
  */
-@Module({})
+@Module({
+  imports: [],
+})
 export class CoreModule {}

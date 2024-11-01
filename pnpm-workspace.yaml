@@ -84,6 +84,7 @@ catalog:
   element-plus: ^2.8.6
   eslint: ^9.13.0
   eslint-config-turbo: ^2.2.3
+  eslint-config-prettier: ^9.1.0
   eslint-plugin-command: ^0.2.6
   eslint-plugin-eslint-comments: ^3.2.0
   eslint-plugin-import-x: ^4.3.1

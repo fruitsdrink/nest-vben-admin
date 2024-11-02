@@ -221,6 +221,5 @@
   "commentTranslate.hover.enabled": false,
   "commentTranslate.multiLineMerge": true,
   "vue.server.hybridMode": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["keyv", "nestjs", "visulima"]
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

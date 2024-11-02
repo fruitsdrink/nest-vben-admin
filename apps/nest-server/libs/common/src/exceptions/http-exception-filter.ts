@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { isObject, omit, isString, has } from 'es-toolkit/compat';
 
@@ -32,8 +32,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
       expMsg = { expMsg };
     }
 
-    response.status(status).json({
-      code: status.toString(),
+    response.status(HttpStatus.OK).json({
+      code: status,
+      error: exception,
       ...(expMsg as any),
     });
   }

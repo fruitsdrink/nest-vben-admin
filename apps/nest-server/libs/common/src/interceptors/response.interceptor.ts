@@ -34,8 +34,8 @@ export class ResponseInterceptor implements NestInterceptor {
         const { pageSize, pageNumber } = query;
 
         const result = new ResponseDto({
-          code: `${HttpStatus.OK}`,
-          message: 'success',
+          code: 0,
+          message: 'ok',
           data,
         });
 

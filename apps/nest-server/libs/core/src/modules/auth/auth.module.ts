@@ -16,7 +16,7 @@ export class NestAuthModule {
       module: NestAuthModule,
       imports: [PassportModule, JwtModule],
       providers,
-      exports: [PassportModule],
+      exports: [PassportModule, JwtModule],
     };
   }
   static registerAsync(options: NestAuthModuleAsyncOptions): DynamicModule {
@@ -26,7 +26,7 @@ export class NestAuthModule {
       module: NestAuthModule,
       imports: [PassportModule, JwtModule, ...(options.imports || [])],
       providers,
-      exports: [PassportModule],
+      exports: [PassportModule, JwtModule],
     } as DynamicModule;
   }
 }

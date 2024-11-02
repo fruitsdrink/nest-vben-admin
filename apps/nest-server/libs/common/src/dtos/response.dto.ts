@@ -15,10 +15,11 @@ export class ResponseDto<T> {
   }
 
   public data: T;
-  public code?: string;
+  public code: number;
   public message?: string;
   public total?: number;
   public pageSize?: number;
   public pageNumber?: number;
   public pageTotal?: number;
+  public error?: Error;
 }

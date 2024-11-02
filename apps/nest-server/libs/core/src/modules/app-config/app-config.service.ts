@@ -97,6 +97,41 @@ export class AppConfigService {
   }
 
   /**
+   * Redis 配置
+   * @returns
+   */
+  private redisConfig() {
+    /**
+     * 主机
+     */
+    const host = this.configService.get<string>('REDIS_HOST');
+    /**
+     * 端口
+     */
+    const port = this.configService.get<number>('REDIS_PORT');
+    /**
+     * 密码
+     */
+    const password = this.configService.get<string>('REDIS_PASSWORD');
+    /**
+     * 数据库
+     */
+    const db = this.configService.get<number>('REDIS_DB');
+    /**
+     * 键前缀
+     */
+    const keyPrefix = this.configService.get<string>('REDIS_KEY_PREFIX');
+
+    return {
+      host,
+      port,
+      password,
+      db,
+      keyPrefix,
+    };
+  }
+
+  /**
    * 应用配置
    */
   get app(): ReturnType<AppConfigService['appConfig']> {
@@ -108,5 +143,9 @@ export class AppConfigService {
    */
   get jwt(): ReturnType<AppConfigService['jwtConfig']> {
     return this.jwtConfig();
+  }
+
+  get redis(): ReturnType<AppConfigService['redisConfig']> {
+    return this.redisConfig();
   }
 }

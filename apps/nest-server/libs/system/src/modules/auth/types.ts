@@ -52,7 +52,7 @@ export type GenerateTokenResult = {
   /**
    * jwt过期时间
    */
-  expiresIn: string;
+  expiresIn: Date;
   /**
    * jwt刷新令牌
    */
@@ -60,7 +60,7 @@ export type GenerateTokenResult = {
   /**
    * jwt刷新过期时间
    */
-  refreshExpiresIn: string;
+  refreshExpiresIn: Date;
   /**
    * 是否启用cookie安全
    */

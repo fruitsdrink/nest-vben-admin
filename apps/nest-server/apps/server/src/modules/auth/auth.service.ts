@@ -24,7 +24,7 @@ export class AuthService {
       httpOnly: true,
     });
 
-    response.cookie('RefreshAuthentication', refreshToken, {
+    response.cookie('Refresh', refreshToken, {
       expires: refreshExpiresIn,
       secure: cookieSecure,
       httpOnly: true,

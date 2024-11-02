@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { SysAuthService } from './modules';
 
 @Injectable()
 export class SystemService {
-  getHello(): string {
-    return 'Hello World!';
-  }
+  constructor(public readonly authService: SysAuthService) {}
 }

@@ -2,17 +2,19 @@ import { AppConfigService } from '@app/core';
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { SysUser } from '@prisma/client';
-import type { JwtPayladDto } from '@app/common';
 import { JwtService } from '@nestjs/jwt';
+import { SystemService } from '@app/system';
+import type { LoginResult } from './dtos';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly appConfig: AppConfigService,
     private readonly jwtService: JwtService,
+    private readonly systemService: SystemService,
   ) {}
 
-  login(user: SysUser, response: Response) {
+  login(user: SysUser, response: Response): LoginResult {
     const { accessToken, refreshToken, expiresIn, refreshExpiresIn, cookieSecure } =
       this.genenateToken(user);
 
@@ -38,38 +40,17 @@ export class AuthService {
   }
 
   private genenateToken(user: SysUser) {
-    // jwt 过期时间
-    const expiresIn = new Date();
-    expiresIn.setMilliseconds(expiresIn.getTime() + this.appConfig.jwt.expiresInMilliseconds);
-
-    // jwt 刷新过期时间
-    const refreshExpiresIn = new Date();
-    refreshExpiresIn.setMilliseconds(
-      refreshExpiresIn.getTime() + this.appConfig.jwt.refreshExpiresInMilliseconds,
-    );
-
-    const payload: JwtPayladDto = {
+    return this.systemService.authService.genenateToken(this.jwtService, {
       userId: user.id,
-    };
-
-    // 生成 jwt 令牌
-    const accessToken = this.jwtService.sign(payload, {
-      secret: this.appConfig.jwt.secret,
-      expiresIn: this.appConfig.jwt.expiresIn,
+      jwt: {
+        secret: this.appConfig.jwt.secret,
+        expiresIn: this.appConfig.jwt.expiresIn,
+        expiresInMilliseconds: this.appConfig.jwt.expiresInMilliseconds,
+        refreshSecret: this.appConfig.jwt.refreshSecret,
+        refreshExpiresIn: this.appConfig.jwt.refreshExpiresIn,
+        refreshExpiresInMilliseconds: this.appConfig.jwt.refreshExpiresInMilliseconds,
+        cookieSecure: this.appConfig.jwt.cookieSecure,
+      },
     });
-
-    // 生成 jwt 刷新令牌
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: this.appConfig.jwt.refreshSecret,
-      expiresIn: this.appConfig.jwt.refreshExpiresIn,
-    });
-
-    return {
-      accessToken,
-      expiresIn,
-      refreshToken,
-      refreshExpiresIn,
-      cookieSecure: this.appConfig.jwt.cookieSecure,
-    };
   }
 }

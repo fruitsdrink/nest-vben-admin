@@ -4,9 +4,11 @@ import { AuthController } from './auth.controller';
 import { NestAuthModule, PrismaService } from '@app/core';
 import { compare, type JwtPayladDto } from '@app/common';
 import type { LocalVerifyUserFnOptions } from '@app/core/modules/auth/types';
+import { SystemModule } from '@app/system';
 
 @Module({
   imports: [
+    SystemModule,
     NestAuthModule.registerAsync({
       useFactory: (prismaService: PrismaService) => {
         return {

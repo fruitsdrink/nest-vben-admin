@@ -21,6 +21,7 @@ model SysUser {
   sortNo         Int             @default(0) @map("sort_no") /// 排序号
   openId         String?         @map("open_id") /// 微信OpenId
   unionId        String?         @map("union_id") /// 微信UnionId
+  accessToken    String?         @map("access_token") /// 访问Token
   refreshToken   String?         @map("refresh_token") /// 刷新Token
   isChangedPwd   Int             @default(0) @map("is_changed_pwd") /// 默认密码是否已修改 0:否 1:是
   registerSource REGISTER_SOURCE @default(SYSTEM) @map("register_source") /// 注册用户来源

@@ -3,7 +3,7 @@ import { has } from 'es-toolkit/compat';
 import { DELETEDAT } from '../constants';
 
 type PaginationRes<T> = {
-  code: string;
+  code: number;
   message?: string;
   list: T;
   total: number;
@@ -58,8 +58,8 @@ export function createPaginationExtension<TModel = any, TArgs = any>(prisma: Pri
           const pageTotal = Math.ceil(total / pageSize);
 
           return {
-            code: '200',
-            message: 'success',
+            code: 0,
+            message: 'ok',
             list: data ?? [],
             total,
             pageSize,

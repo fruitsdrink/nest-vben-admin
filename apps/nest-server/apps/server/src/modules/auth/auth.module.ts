@@ -13,17 +13,22 @@ import { SystemModule } from '@app/system';
       useFactory: (prismaService: PrismaService) => {
         return {
           jwt: {
-            validateFn: async (payload: JwtPayladDto) => {
-              try {
-                const user = await prismaService.sysUser.findById(payload.userId);
-
-                if (!user || !user.status) {
-                  throw new UnauthorizedException();
-                }
-                return user;
-              } catch (error) {
-                throw new UnauthorizedException();
+            validateFn: async (accessToken: string, payload: JwtPayladDto) => {
+              const user = await prismaService.sysUser.findFirst({
+                where: {
+                  id: payload.userId,
+                  status: 1,
+                  isVerify: 1,
+                },
+              });
+              if (!user) {
+                throw new UnauthorizedException('用户不存在或已被禁用');
               }
+              if (user.accessToken !== accessToken) {
+                throw new UnauthorizedException('用户已退出登录');
+              }
+
+              return user;
             },
           },
           local: {

@@ -1,10 +1,10 @@
-import type { JwtPayladDto } from '@app/common';
+import { BaseService, type JwtPayladDto } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { GenerateTokenOptions, GenerateTokenResult } from './types';
 
 @Injectable()
-export class SysAuthService {
+export class SysAuthService extends BaseService {
   /**
    * 生成token
    * @param jwtService Jwt服务

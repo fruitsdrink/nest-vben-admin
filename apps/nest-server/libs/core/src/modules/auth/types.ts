@@ -10,7 +10,7 @@ export interface LocalVerifyUserFnOptions {
 }
 export interface NestAuthModuleOptions {
   jwt: {
-    validateFn: (payload: JwtPayladDto) => Promise<any>;
+    validateFn: (accessToken: string, payload: JwtPayladDto) => Promise<any>;
   };
   local: {
     usernameField: string;

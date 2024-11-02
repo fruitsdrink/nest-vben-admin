@@ -1,4 +1,4 @@
-import { AppConfigService } from '@app/core';
+import { AppConfigService, PrismaService } from '@app/core';
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { SysUser } from '@prisma/client';
@@ -9,14 +9,26 @@ import type { LoginResult } from './dtos';
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly prismaSErvice: PrismaService,
     private readonly appConfig: AppConfigService,
     private readonly jwtService: JwtService,
     private readonly systemService: SystemService,
   ) {}
 
-  login(user: SysUser, response: Response): LoginResult {
+  async login(user: SysUser, response: Response): Promise<LoginResult> {
     const { accessToken, refreshToken, expiresIn, refreshExpiresIn, cookieSecure } =
       this.genenateToken(user);
+
+    // 将令牌存储到数据库
+    await this.prismaSErvice.sysUser.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        accessToken,
+        refreshToken,
+      },
+    });
 
     response.cookie('Authentication', accessToken, {
       expires: expiresIn,

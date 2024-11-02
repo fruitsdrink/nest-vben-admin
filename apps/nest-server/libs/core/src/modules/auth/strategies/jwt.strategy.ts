@@ -7,10 +7,11 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
  * JWT 验证策略
  */
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  private accessToken: string;
   constructor(
     private readonly options: {
       secret: string;
-      validateFn: (payload: JwtPayladDto) => Promise<boolean>;
+      validateFn: (accessToken: string, payload: JwtPayladDto) => Promise<boolean>;
     },
   ) {
     super({
@@ -21,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           if (!token) {
             return request.cookies?.Authentication;
           }
+          this.accessToken = token;
           return token;
         },
       ]),
@@ -31,6 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayladDto) {
-    return await this.options.validateFn(payload);
+    return await this.options.validateFn(this.accessToken, payload);
   }
 }

@@ -21,7 +21,7 @@ export const appConfigSchema = object({
   JWT_REFRESH_EXPIRES_IN: string().required(),
   REDIS_HOST: string().required(),
   REDIS_PORT: number().required(),
-  REDIS_PASSWORD: string().required(),
+  REDIS_PASSWORD: string(),
   REDIS_DB: number().required(),
   REDIS_KEY_PREFIX: string().required(),
 });

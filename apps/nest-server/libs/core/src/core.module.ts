@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule, PrismaService } from './modules';
-import { CacheModule } from './modules/cache/cache.module';
+import { NestCacheModule, PrismaModule } from './modules';
 
 /**
  * Nest Server 核心模块
  */
 @Module({
-  imports: [PrismaModule, CacheModule],
+  imports: [PrismaModule, NestCacheModule],
 })
 export class CoreModule {}

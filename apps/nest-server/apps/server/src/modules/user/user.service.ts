@@ -6,9 +6,15 @@ import type { SysUser } from '@prisma/client';
 export class UserService {
   constructor(private systemService: SystemService) {}
 
-  getInfo(user: SysUser) {
-    const { id, realName, username } = user;
+  async getInfo(user: SysUser) {
+    const { id } = user;
+    let cacheUser = await this.systemService.cache.user.get(id);
+    if (!cacheUser) {
+      this.systemService.cache.user.set(id, user);
+      cacheUser = user;
+    }
 
+    const { realName, username } = cacheUser;
     return {
       id,
       realName,

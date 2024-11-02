@@ -52,7 +52,7 @@ export class AuthService {
   }
 
   private genenateToken(user: SysUser) {
-    return this.systemService.authService.genenateToken(this.jwtService, {
+    return this.systemService.auth.genenateToken(this.jwtService, {
       userId: user.id,
       jwt: {
         secret: this.appConfig.jwt.secret,

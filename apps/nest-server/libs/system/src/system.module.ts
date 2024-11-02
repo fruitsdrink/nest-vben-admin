@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SystemService } from './system.service';
-import { SysAuthModule, SysUserModule } from './modules';
+import { SysAuthModule, SysCacheModule, SysUserModule } from './modules';
 import { CoreModule } from '@app/core';
 
 @Module({
-  imports: [CoreModule, SysAuthModule, SysUserModule],
+  imports: [CoreModule, SysAuthModule, SysUserModule, SysCacheModule],
   providers: [SystemService],
   exports: [SystemService],
 })

@@ -1,3 +1,4 @@
+import { SysCacheService } from './../cache/cache.service';
 import { Module, UnauthorizedException, DynamicModule, BadRequestException } from '@nestjs/common';
 import { SysAuthService } from './auth.service';
 import { NestAuthModule, PrismaService, LocalVerifyUserFnOptions } from '@app/core';
@@ -15,7 +16,23 @@ export class SysAuthModule {
       imports: [
         JwtModule,
         NestAuthModule.registerAsync({
-          useFactory: (prismaService: PrismaService) => {
+          useFactory: (prismaService: PrismaService, sysCache: SysCacheService) => {
+            // 清除accessToken缓存
+            const clearAccessTokenCache = async (userId: string) => {
+              await Promise.all([
+                sysCache.auth.delAccessToken(userId),
+                prismaService.sysUser.update({
+                  where: {
+                    id: userId,
+                  },
+                  data: {
+                    accessToken: null,
+                    refreshToken: null,
+                  },
+                }),
+              ]);
+            };
+
             return {
               jwt: {
                 validateFn: async (accessToken: string, payload: JwtPayladDto) => {
@@ -29,7 +46,22 @@ export class SysAuthModule {
                   if (!user) {
                     throw new UnauthorizedException('用户不存在或已被禁用');
                   }
-                  if (user.accessToken !== accessToken) {
+                  // 从缓存中获取accessToken
+                  let cacheAccessToken = await sysCache.auth.accessToken(user.id);
+
+                  if (cacheAccessToken) {
+                    if (cacheAccessToken !== accessToken) {
+                      await clearAccessTokenCache(user.id);
+
+                      throw new UnauthorizedException('用户已退出登录');
+                    }
+                  } else {
+                    cacheAccessToken = user.accessToken;
+                    await sysCache.auth.setAccessToken(user.id, cacheAccessToken);
+                  }
+
+                  if (cacheAccessToken !== accessToken) {
+                    await clearAccessTokenCache(user.id);
                     throw new UnauthorizedException('用户已退出登录');
                   }
 
@@ -62,12 +94,15 @@ export class SysAuthModule {
                     throw new BadRequestException('用户名或或密码错误');
                   }
 
+                  // 缓存用户信息
+                  await sysCache.user.set(user.id, user);
+
                   return user;
                 },
               },
             };
           },
-          inject: [PrismaService],
+          inject: [PrismaService, SysCacheService],
         }),
       ],
       exports: [JwtModule],

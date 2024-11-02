@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { SysAuthService, SysUserService } from './modules';
+import { SysAuthService, SysUserService, SysCacheService } from './modules';
 
 @Injectable()
 export class SystemService {
   constructor(
-    public readonly authService: SysAuthService,
-    public readonly userService: SysUserService,
+    public readonly auth: SysAuthService,
+    public readonly user: SysUserService,
+    public readonly cache: SysCacheService,
   ) {}
 }

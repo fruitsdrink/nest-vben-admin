@@ -27,6 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           }
           token = token ?? '';
           this.accessToken = token;
+
           return token;
         },
       ]),

@@ -17,10 +17,11 @@ export class SysAuthModule {
         JwtModule,
         NestAuthModule.registerAsync({
           useFactory: (prismaService: PrismaService, sysCache: SysCacheService) => {
-            // 清除accessToken缓存
-            const clearAccessTokenCache = async (userId: string) => {
+            // 清除auth缓存
+            const clearAuthCache = async (userId: string) => {
               await Promise.all([
-                sysCache.auth.delAccessToken(userId),
+                sysCache.auth.del(userId),
+                sysCache.user.del(userId),
                 prismaService.sysUser.update({
                   where: {
                     id: userId,
@@ -44,24 +45,25 @@ export class SysAuthModule {
                     },
                   });
                   if (!user) {
+                    await clearAuthCache(payload.userId);
                     throw new UnauthorizedException('用户不存在或已被禁用');
                   }
                   // 从缓存中获取accessToken
-                  let cacheAccessToken = await sysCache.auth.accessToken(user.id);
+                  let cacheAccessToken = await sysCache.auth.get(user.id);
 
                   if (cacheAccessToken) {
                     if (cacheAccessToken !== accessToken) {
-                      await clearAccessTokenCache(user.id);
+                      await clearAuthCache(user.id);
 
                       throw new UnauthorizedException('用户已退出登录');
                     }
                   } else {
                     cacheAccessToken = user.accessToken;
-                    await sysCache.auth.setAccessToken(user.id, cacheAccessToken);
+                    await sysCache.auth.set(user.id, cacheAccessToken);
                   }
 
                   if (cacheAccessToken !== accessToken) {
-                    await clearAccessTokenCache(user.id);
+                    await clearAuthCache(user.id);
                     throw new UnauthorizedException('用户已退出登录');
                   }
 

@@ -18,10 +18,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           // 从请求头中获取 token
-          const token = request.headers?.authorization?.replace('Bearer ', '');
+          let token = request.headers?.authorization?.replace('Bearer ', '');
           if (!token) {
-            return request.cookies?.Authentication;
+            token = request.cookies?.Authentication;
+            if (token) {
+              request.headers.authorization = `Bearer ${token}`;
+            }
           }
+          token = token ?? '';
           this.accessToken = token;
           return token;
         },

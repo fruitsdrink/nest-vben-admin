@@ -21,7 +21,7 @@ export class AuthCache {
    * 获取accessToken
    * @returns
    */
-  async accessToken(userId: string) {
+  async get(userId: string) {
     const key = this.getKey(userId);
     return await this.cacheKeyv.get<string>(key);
   }
@@ -33,7 +33,7 @@ export class AuthCache {
    * @param ttl 过期时间，单位毫秒
    * @returns
    */
-  async setAccessToken(userId: string, accessToken: string, ttl?: number) {
+  async set(userId: string, accessToken: string, ttl?: number) {
     const key = this.getKey(userId);
     return await this.cacheKeyv.set(key, accessToken, ttl);
   }
@@ -42,7 +42,7 @@ export class AuthCache {
    * 删除accessToken
    * @returns
    */
-  async delAccessToken(userId: string) {
+  async del(userId: string) {
     const key = this.getKey(userId);
     return await this.cacheKeyv.delete(key);
   }

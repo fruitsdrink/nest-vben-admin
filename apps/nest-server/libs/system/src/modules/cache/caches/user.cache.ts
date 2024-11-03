@@ -20,7 +20,7 @@ export class UserCache {
     return await this.cache.set(key, user, ttl);
   }
 
-  async delete(userId: string): Promise<boolean> {
+  async del(userId: string): Promise<boolean> {
     const key = this.getKey(userId);
     return await this.cache.delete(key);
   }

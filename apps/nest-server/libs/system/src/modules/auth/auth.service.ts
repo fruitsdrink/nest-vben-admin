@@ -44,7 +44,7 @@ export class SysAuthService extends BaseService {
     });
 
     // 缓存 accessToken
-    this.cache.auth.setAccessToken(options.userId, accessToken, options.jwt.expiresInMilliseconds);
+    this.cache.auth.set(options.userId, accessToken, options.jwt.expiresInMilliseconds);
 
     return {
       accessToken,

@@ -1,5 +1,5 @@
 import { AppConfigService, PrismaService } from '@app/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Response } from 'express';
 import { SysUser } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
@@ -9,18 +9,24 @@ import type { LoginResult } from './dtos';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaSErvice: PrismaService,
+    private readonly primsa: PrismaService,
     private readonly appConfig: AppConfigService,
     private readonly jwtService: JwtService,
     private readonly systemService: SystemService,
   ) {}
 
+  /**
+   * 获取jwt令牌
+   * @param user 当前用户
+   * @param response 当前请求的响应
+   * @returns jwt令牌
+   */
   async login(user: SysUser, response: Response): Promise<LoginResult> {
     const { accessToken, refreshToken, expiresIn, refreshExpiresIn, cookieSecure } =
       this.genenateToken(user);
 
     // 将令牌存储到数据库
-    await this.prismaSErvice.sysUser.update({
+    await this.primsa.sysUser.update({
       where: {
         id: user.id,
       },
@@ -51,6 +57,11 @@ export class AuthService {
     };
   }
 
+  /**
+   * 生成jwt令牌
+   * @param user 当前用户
+   * @returns jwt令牌
+   */
   private genenateToken(user: SysUser) {
     return this.systemService.auth.genenateToken(this.jwtService, {
       userId: user.id,
@@ -64,5 +75,37 @@ export class AuthService {
         cookieSecure: this.appConfig.jwt.cookieSecure,
       },
     });
+  }
+
+  /**
+   * 获取当前用户的权限码
+   * @param userId 用户id
+   */
+  getCodes(uesrId: string) {
+    //todo 获取用户权限码
+    return ['AC_100100', 'AC_100110', 'AC_100120', 'AC_100010'];
+  }
+
+  /**
+   * 用户登出
+   * @param userId 用户id
+   */
+  async logout(userId: string) {
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+    await Promise.all([
+      this.primsa.sysUser.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          accessToken: null,
+          refreshToken: null,
+        },
+      }),
+      this.systemService.cache.auth.del(userId),
+      this.systemService.cache.user.del(userId),
+    ]);
   }
 }

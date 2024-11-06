@@ -1,7 +1,7 @@
+import { string } from 'yup';
 import 'reflect-metadata';
 import {
   ClassSerializerInterceptor,
-  ModuleMetadata,
   VersioningType,
   ExceptionFilter,
   INestApplication,
@@ -13,12 +13,13 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import chalk from 'chalk';
 import consola from 'consola';
 import { SetupOptions, BootOptions, NestMiddlewareFn } from '../types';
-import { AppConfigModule, AppConfigService } from '../modules';
+import { AppConfigService } from '../modules';
 import { HttpExceptionFilter, ResponseInterceptor } from '@app/common';
 import cookieParser from 'cookie-parser';
-import { NextFunction, Request, Response } from 'express';
 import { nestValidatePipe } from '../pipes';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import fs from 'fs';
 
 /**
  * 初始化拦截器
@@ -70,7 +71,6 @@ const initCors = (
     methods: string;
   },
 ) => {
-  console.log(options);
   if (options.enable && options.origin) {
     app.enableCors({
       origin: options.origin ?? '*',
@@ -117,6 +117,44 @@ const initPipes = (app: INestApplication, pipes?: PipeTransform[]) => {
 };
 
 /**
+ * 初始化静态资源
+ * @param app 应用实例
+ * @param appConfigService 配置服务
+ * @param options 配置选项
+ */
+const intiStaticAssets = (
+  app: NestExpressApplication,
+  appConfigService: AppConfigService,
+  options?: {
+    path: string;
+    prefix: string;
+  },
+) => {
+  const defaultOptions = {
+    path: 'public',
+    prefix: '/public/',
+  };
+  const { path, prefix } = { ...defaultOptions, ...options };
+  const staticPath = join(process.cwd(), path);
+  const imagePath = join(staticPath, 'images'); // 图片路径
+  const uploadPath = join(staticPath, 'upload'); // 上传文件路径
+  const avatarPath = join(staticPath, 'avatar'); // 头像路径
+  // 创建文件夹
+  fs.mkdirSync(staticPath, { recursive: true });
+  fs.mkdirSync(imagePath, { recursive: true });
+  fs.mkdirSync(uploadPath, { recursive: true });
+  fs.mkdirSync(avatarPath, { recursive: true });
+
+  app.useStaticAssets(path, {
+    prefix,
+  });
+
+  return {
+    staticPath: prefix,
+  };
+};
+
+/**
  * 创建提示信息
  * @param options 配置选项
  * @returns
@@ -126,14 +164,14 @@ const getPrintInfo = (options: {
   port: number;
   prefix?: string;
   version?: boolean;
-}): string => {
+}): { printInfo: string; apiUrl: string; host: string } => {
   const { appName, port, prefix, version } = options;
   const url = `http://localhost:${port}`;
   const prefixInfo = prefix ? `/${prefix}` : '';
   const versionInfo = version ? '/v1' : '';
-  return `${chalk.green('➜')}  ${chalk.bold(appName)}: ${chalk.cyan(
-    `${url}${prefixInfo}${versionInfo}`,
-  )}`;
+  const apiUrl = `${url}${prefixInfo}${versionInfo}`;
+  const printInfo = `${chalk.green('➜')}  ${chalk.bold(appName)}: ${chalk.cyan(apiUrl)}`;
+  return { printInfo, apiUrl, host: url };
 };
 
 /**
@@ -149,6 +187,22 @@ const setup = async (options: SetupOptions) => {
     filters = [],
     pipes = [],
   } = options;
+
+  const port = options.port ?? appConfigService.app.port;
+
+  const { printInfo, apiUrl, host } = getPrintInfo({
+    appName: options.appName,
+    port,
+    prefix: appConfigService.app.prefix,
+    version: appConfigService.app.enableVersion,
+  });
+
+  // 初始化静态资源
+  const { staticPath } = intiStaticAssets(app, appConfigService);
+
+  appConfigService.apiUrl = apiUrl;
+  appConfigService.host = host;
+  appConfigService.publicPath = staticPath;
 
   // 初始化跨域
   initCors(app, {
@@ -175,15 +229,6 @@ const setup = async (options: SetupOptions) => {
 
   // 设置版本
   initVersion(app, appConfigService.app.enableVersion);
-
-  const port = options.port ?? appConfigService.app.port;
-
-  const printInfo = getPrintInfo({
-    appName: options.appName,
-    port,
-    prefix: appConfigService.app.prefix,
-    version: appConfigService.app.enableVersion,
-  });
 
   return {
     port,

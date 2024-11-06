@@ -45,4 +45,8 @@ export interface LoginResult {
    * 用户名
    */
   username: string;
+  /**
+   * 头像
+   */
+  avatar?: string;
 }

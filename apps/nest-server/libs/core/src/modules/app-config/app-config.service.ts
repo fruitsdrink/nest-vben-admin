@@ -7,7 +7,34 @@ import ms from 'ms';
  */
 @Injectable()
 export class AppConfigService {
+  private _host: string; // 主机
+  private _apiUrl: string; // 接口地址
+  private _publicPath: string; // 静态资源地址
+
   constructor(private readonly configService: ConfigService) {}
+
+  get host() {
+    return this._host;
+  }
+
+  set host(value: string) {
+    this._host = value;
+  }
+  get apiUrl() {
+    return this._apiUrl;
+  }
+
+  set apiUrl(value: string) {
+    this._apiUrl = value;
+  }
+
+  get publicPath() {
+    return this._publicPath;
+  }
+
+  set publicPath(value: string) {
+    this._publicPath = value;
+  }
 
   private appConfig() {
     /**

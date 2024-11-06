@@ -43,6 +43,7 @@ export const useUserStore = defineStore('core-user', {
     setUserInfo(userInfo: BasicUserInfo | null) {
       // 设置用户信息
       this.userInfo = userInfo;
+      console.log(userInfo);
       // 设置角色信息
       const roles = userInfo?.roles ?? [];
       this.setUserRoles(roles);

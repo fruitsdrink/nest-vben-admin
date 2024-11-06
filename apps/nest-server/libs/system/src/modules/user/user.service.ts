@@ -1,7 +1,7 @@
 import { BaseService, type FindManyService, type FindOneService } from '@app/common';
-import { PrismaService } from '@app/core';
+import { PrismaService, type AppConfigService } from '@app/core';
 import { Injectable } from '@nestjs/common';
-import { SysUser, type $Enums, type Prisma } from '@prisma/client';
+import { SysUser, type Prisma } from '@prisma/client';
 import type { FindManyDto } from './dtos';
 
 @Injectable()

@@ -71,14 +71,13 @@ export const authenticateResponseInterceptor = ({
 };
 
 export const errorMessageResponseInterceptor = (
-  makeErrorMessage?: MakeErrorMessageFn,
+  makeErrorMessage?: MakeErrorMessageFn
 ): ResponseInterceptorConfig => {
   return {
     rejected: (error: any) => {
       if (axios.isCancel(error)) {
         return Promise.reject(error);
       }
-
       const err: string = error?.toString?.() ?? '';
       let errMsg = '';
       if (err?.includes('Network Error')) {
@@ -93,7 +92,6 @@ export const errorMessageResponseInterceptor = (
 
       let errorMessage = '';
       const status = error?.response?.status;
-
       switch (status) {
         case 400: {
           errorMessage = $t('ui.fallback.http.badRequest');

@@ -4,16 +4,19 @@ import { Response } from 'express';
 import { SysUser } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { SystemService } from '@app/system';
-import type { LoginResult } from './dtos';
+import type { LoginResult, RefreshDto } from './dtos';
+import { BaseService } from '@app/common';
 
 @Injectable()
-export class AuthService {
+export class AuthService extends BaseService {
   constructor(
     private readonly primsa: PrismaService,
     private readonly appConfig: AppConfigService,
     private readonly jwtService: JwtService,
     private readonly systemService: SystemService,
-  ) {}
+  ) {
+    super();
+  }
 
   /**
    * 获取jwt令牌
@@ -54,6 +57,7 @@ export class AuthService {
       realName: user.realName,
       roles: [],
       username: user.username,
+      avatar: user.avatar ? this.avatarUrl(this.appConfig, user.avatar) : null,
     };
   }
 
@@ -75,6 +79,26 @@ export class AuthService {
         cookieSecure: this.appConfig.jwt.cookieSecure,
       },
     });
+  }
+
+  /**
+   * 刷新令牌
+   * @param user 当前用户
+   * @param res 当前请求的响应
+   * @param data 刷新令牌数据
+   */
+  async refreshToken(user: SysUser, res: Response, data: RefreshDto) {
+    if (!data.withCredentials) {
+      throw new UnauthorizedException();
+    }
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const { accessToken } = await this.login(user, res);
+    return {
+      accessToken,
+      status: 1,
+    };
   }
 
   /**

@@ -44,6 +44,7 @@ export class SysAuthModule {
                       isVerify: 1,
                     },
                   });
+
                   if (!user) {
                     await clearAuthCache(payload.userId);
                     throw new UnauthorizedException('用户不存在或已被禁用');

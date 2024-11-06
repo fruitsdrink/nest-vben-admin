@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { GenerateTokenOptions, GenerateTokenResult } from './types';
 import { SysCacheService } from '../cache';
-import type { PrismaService } from '@app/core';
 
 @Injectable()
 export class SysAuthService extends BaseService {

@@ -1,11 +1,12 @@
 import type { INestApplication } from '@nestjs/common';
 import type { AppConfigService } from '../modules';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 
 export type SetupOptions = {
   /**
    * 应用实例
    */
-  app: INestApplication;
+  app: NestExpressApplication;
   /**
    * 端口号
    */

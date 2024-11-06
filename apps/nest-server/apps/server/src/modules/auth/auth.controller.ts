@@ -48,4 +48,12 @@ export class AuthController {
   async logout(@CurrentUser() user: SysUser) {
     return await this.service.logout(user.id);
   }
+
+  @Get('test')
+  @Public()
+  async test() {
+    return {
+      isok: true,
+    };
+  }
 }

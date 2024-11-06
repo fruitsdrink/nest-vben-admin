@@ -81,6 +81,8 @@
     "autoprefixer": "catalog:",
     "cross-env": "catalog:",
     "cspell": "catalog:",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "happy-dom": "catalog:",
     "husky": "catalog:",
     "is-ci": "catalog:",

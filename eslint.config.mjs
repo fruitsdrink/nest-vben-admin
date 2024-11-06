@@ -2,4 +2,9 @@
 
 import { defineConfig } from '@vben/eslint-config';
 
-export default defineConfig([{ ignores: ['apps/nest-server/**/*.*'] }]);
+const config = defineConfig([{ ignores: ['apps/nest-server/**/*.*'] }]);
+
+const extentsConfig = {
+  "extends": ["eslint:recommended", "standard",  "plugin:prettier/recommended"]
+}
+export default { ...config,...extentsConfig };

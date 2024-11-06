@@ -3,21 +3,22 @@ import {
   ClassSerializerInterceptor,
   ModuleMetadata,
   VersioningType,
-  type ExceptionFilter,
-  type INestApplication,
-  type NestInterceptor,
-  type NestMiddleware,
-  type PipeTransform,
+  ExceptionFilter,
+  INestApplication,
+  NestInterceptor,
+  NestMiddleware,
+  PipeTransform,
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import chalk from 'chalk';
 import consola from 'consola';
-import type { SetupOptions, BootOptions, NestMiddlewareFn } from '../types';
+import { SetupOptions, BootOptions, NestMiddlewareFn } from '../types';
 import { AppConfigModule, AppConfigService } from '../modules';
 import { HttpExceptionFilter, ResponseInterceptor } from '@app/common';
 import cookieParser from 'cookie-parser';
-import type { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { nestValidatePipe } from '../pipes';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 /**
  * 初始化拦截器
@@ -69,7 +70,8 @@ const initCors = (
     methods: string;
   },
 ) => {
-  if (options.enable && !options.origin) {
+  console.log(options);
+  if (options.enable && options.origin) {
     app.enableCors({
       origin: options.origin ?? '*',
       credentials: options.credentials,
@@ -148,6 +150,14 @@ const setup = async (options: SetupOptions) => {
     pipes = [],
   } = options;
 
+  // 初始化跨域
+  initCors(app, {
+    enable: appConfigService.app.enableCors,
+    origin: appConfigService.app.corsOrigin,
+    credentials: appConfigService.app.corsCredentials,
+    methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+  });
+
   // 初始化拦截器
   initInterceptors(app, interceptors);
 
@@ -159,14 +169,6 @@ const setup = async (options: SetupOptions) => {
 
   // 初始化管道
   initPipes(app, pipes);
-
-  // 初始化跨域
-  initCors(app, {
-    enable: appConfigService.app.enableCors,
-    origin: appConfigService.app.corsOrigin,
-    credentials: appConfigService.app.corsCredentials,
-    methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
-  });
 
   // 设置地址前缀
   initPrefix(app, appConfigService.app.prefix);
@@ -194,7 +196,7 @@ const setup = async (options: SetupOptions) => {
  */
 const boot = async (options: BootOptions): Promise<void> => {
   const { appName, mainModule, interceptors, middlewares, filters, pipes } = options;
-  const app = await NestFactory.create(mainModule);
+  const app = await NestFactory.create<NestExpressApplication>(mainModule);
 
   const appConfigService = app.get(AppConfigService);
 

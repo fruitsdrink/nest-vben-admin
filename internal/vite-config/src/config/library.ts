@@ -19,20 +19,15 @@ function defineLibraryConfig(userConfigPromise?: DefineLibraryOptions) {
 
     const plugins = await loadLibraryPlugins({
       dts: false,
-      injectLibCss: true,
       injectMetadata: true,
       isBuild,
       mode,
       ...library,
     });
 
-    const { dependencies = {}, peerDependencies = {} } =
-      await readPackageJSON(root);
+    const { dependencies = {}, peerDependencies = {} } = await readPackageJSON(root);
 
-    const externalPackages = [
-      ...Object.keys(dependencies),
-      ...Object.keys(peerDependencies),
-    ];
+    const externalPackages = [...Object.keys(dependencies), ...Object.keys(peerDependencies)];
 
     const packageConfig: UserConfig = {
       build: {
@@ -43,9 +38,7 @@ function defineLibraryConfig(userConfigPromise?: DefineLibraryOptions) {
         },
         rollupOptions: {
           external: (id) => {
-            return externalPackages.some(
-              (pkg) => id === pkg || id.startsWith(`${pkg}/`),
-            );
+            return externalPackages.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
           },
         },
       },

@@ -164,6 +164,7 @@ import { defineOverridesPreferences } from '@vben/preferences';
 /**
  * @description 项目配置文件
  * 只需要覆盖项目中的一部分配置，不需要的配置不用覆盖，会自动使用默认配置
+ * !!! 更改配置后请清空缓存，否则可能不生效
  */
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
@@ -184,8 +185,7 @@ const defaultPreferences: Preferences = {
     colorWeakMode: false,
     compact: false,
     contentCompact: 'wide',
-    defaultAvatar:
-      'https://unpkg.com/@vbenjs/static-source@0.1.7/source/avatar-v1.webp',
+    defaultAvatar: 'https://unpkg.com/@vbenjs/static-source@0.1.7/source/avatar-v1.webp',
     dynamicTitle: true,
     enableCheckUpdates: true,
     enablePreferences: true,
@@ -536,5 +536,4 @@ interface Preferences {
 
 - `overridesPreferences`方法只需要覆盖项目中的一部分配置，不需要的配置不用覆盖，会自动使用默认配置。
 - 任何配置项都可以覆盖，只需要在`overridesPreferences`方法内覆盖即可，不要修改默认配置文件。
-
-:::
+- 更改配置后请清空缓存，否则可能不生效。:::

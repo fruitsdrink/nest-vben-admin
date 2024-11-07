@@ -14,7 +14,6 @@ import { visualizer as viteVisualizerPlugin } from 'rollup-plugin-visualizer';
 import viteCompressPlugin from 'vite-plugin-compression';
 import viteDtsPlugin from 'vite-plugin-dts';
 import { createHtmlPlugin as viteHtmlPlugin } from 'vite-plugin-html';
-import { libInjectCss as viteLibInjectCss } from 'vite-plugin-lib-inject-css';
 import { VitePWA } from 'vite-plugin-pwa';
 import viteVueDevTools from 'vite-plugin-vue-devtools';
 
@@ -46,9 +45,7 @@ async function loadConditionPlugins(conditionPlugins: ConditionPlugin[]) {
 /**
  * 根据条件获取通用的vite插件
  */
-async function loadCommonPlugins(
-  options: CommonPluginOptions,
-): Promise<ConditionPlugin[]> {
+async function loadCommonPlugins(options: CommonPluginOptions): Promise<ConditionPlugin[]> {
   const { devtools, injectMetadata, isBuild, visualizer } = options;
   return [
     {
@@ -86,9 +83,7 @@ async function loadCommonPlugins(
 /**
  * 根据条件获取应用类型的vite插件
  */
-async function loadApplicationPlugins(
-  options: ApplicationPluginOptions,
-): Promise<PluginOption[]> {
+async function loadApplicationPlugins(options: ApplicationPluginOptions): Promise<PluginOption[]> {
   // 单独取，否则commonOptions拿不到
   const isBuild = options.isBuild;
   const env = options.env;
@@ -180,14 +175,10 @@ async function loadApplicationPlugins(
       plugins: () => {
         const compressPlugins: PluginOption[] = [];
         if (compressTypes?.includes('brotli')) {
-          compressPlugins.push(
-            viteCompressPlugin({ deleteOriginFile: false, ext: '.br' }),
-          );
+          compressPlugins.push(viteCompressPlugin({ deleteOriginFile: false, ext: '.br' }));
         }
         if (compressTypes?.includes('gzip')) {
-          compressPlugins.push(
-            viteCompressPlugin({ deleteOriginFile: false, ext: '.gz' }),
-          );
+          compressPlugins.push(viteCompressPlugin({ deleteOriginFile: false, ext: '.gz' }));
         }
         return compressPlugins;
       },
@@ -204,9 +195,7 @@ async function loadApplicationPlugins(
     },
     {
       condition: isBuild && extraAppConfig,
-      plugins: async () => [
-        await viteExtraAppConfigPlugin({ isBuild: true, root: process.cwd() }),
-      ],
+      plugins: async () => [await viteExtraAppConfigPlugin({ isBuild: true, root: process.cwd() })],
     },
     {
       condition: archiver,
@@ -220,22 +209,16 @@ async function loadApplicationPlugins(
 /**
  * 根据条件获取库类型的vite插件
  */
-async function loadLibraryPlugins(
-  options: LibraryPluginOptions,
-): Promise<PluginOption[]> {
+async function loadLibraryPlugins(options: LibraryPluginOptions): Promise<PluginOption[]> {
   // 单独取，否则commonOptions拿不到
   const isBuild = options.isBuild;
-  const { dts, injectLibCss, ...commonOptions } = options;
+  const { dts, ...commonOptions } = options;
   const commonPlugins = await loadCommonPlugins(commonOptions);
   return await loadConditionPlugins([
     ...commonPlugins,
     {
       condition: isBuild && !!dts,
       plugins: () => [viteDtsPlugin({ logLevel: 'error' })],
-    },
-    {
-      condition: injectLibCss,
-      plugins: () => [viteLibInjectCss()],
     },
   ]);
 }
@@ -248,4 +231,5 @@ export {
   viteDtsPlugin,
   viteHtmlPlugin,
   viteVisualizerPlugin,
+  viteVxeTableImportsPlugin,
 };

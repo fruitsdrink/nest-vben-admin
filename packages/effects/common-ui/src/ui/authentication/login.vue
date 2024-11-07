@@ -44,7 +44,7 @@ const emit = defineEmits<{
   submit: [Recordable<any>];
 }>();
 
-const [Form, { setFieldValue, validate, getValues }] = useVbenForm(
+const [Form, formApi] = useVbenForm(
   reactive({
     commonConfig: {
       hideLabel: true,
@@ -52,7 +52,7 @@ const [Form, { setFieldValue, validate, getValues }] = useVbenForm(
     },
     schema: computed(() => props.formSchema),
     showDefaultActions: false,
-  }),
+  })
 );
 const router = useRouter();
 
@@ -63,13 +63,10 @@ const localUsername = localStorage.getItem(REMEMBER_ME_KEY) || '';
 const rememberMe = ref(!!localUsername);
 
 async function handleSubmit() {
-  const { valid } = await validate();
-  const values = await getValues();
+  const { valid } = await formApi.validate();
+  const values = await formApi.getValues();
   if (valid) {
-    localStorage.setItem(
-      REMEMBER_ME_KEY,
-      rememberMe.value ? values?.username : '',
-    );
+    localStorage.setItem(REMEMBER_ME_KEY, rememberMe.value ? values?.username : '');
     emit('submit', values);
   }
 }
@@ -80,8 +77,12 @@ function handleGo(path: string) {
 
 onMounted(() => {
   if (localUsername) {
-    setFieldValue('username', localUsername);
+    formApi.setFieldValue('username', localUsername);
   }
+});
+
+defineExpose({
+  getFormApi: () => formApi,
 });
 </script>
 
@@ -104,16 +105,9 @@ onMounted(() => {
 
     <Form />
 
-    <div
-      v-if="showRememberMe || showForgetPassword"
-      class="mb-6 flex justify-between"
-    >
+    <div v-if="showRememberMe || showForgetPassword" class="mb-6 flex justify-between">
       <div class="flex-center">
-        <VbenCheckbox
-          v-if="showRememberMe"
-          v-model:checked="rememberMe"
-          name="rememberMe"
-        >
+        <VbenCheckbox v-if="showRememberMe" v-model:checked="rememberMe" name="rememberMe">
           {{ $t('authentication.rememberMe') }}
         </VbenCheckbox>
       </div>
@@ -168,10 +162,7 @@ onMounted(() => {
     <slot name="to-register">
       <div v-if="showRegister" class="mt-3 text-center text-sm">
         {{ $t('authentication.accountTip') }}
-        <span
-          class="vben-link text-sm font-normal"
-          @click="handleGo(registerPath)"
-        >
+        <span class="vben-link text-sm font-normal" @click="handleGo(registerPath)">
           {{ $t('authentication.createAccount') }}
         </span>
       </div>

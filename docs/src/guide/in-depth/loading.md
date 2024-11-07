@@ -1,4 +1,4 @@
-# 全局loading
+# 全局 loading
 
 全局 loading 指的是页面刷新时出现的加载效果，通常是一个旋转的图标：
 
@@ -6,7 +6,7 @@
 
 ## 原理
 
-由 `vite-plugin-inject-app-loading` 插件实现，插件会在每个应用的注入一个全局的 `loading html`。
+由 `vite-plugin-inject-app-loading` 插件实现，插件会在每个应用都注入一个全局的 `loading html`。
 
 ## 关闭
 
@@ -18,7 +18,7 @@ VITE_INJECT_APP_LOADING=false
 
 ## 自定义
 
-如果你想要自定义全局 loading，可以在应用目录下，与`index.html`同级，创建一个`loading.html`文件，插件会自动读取并注入。这个html可以自行定义样式和动画。
+如果你想要自定义全局 loading，可以在应用目录下，与`index.html`同级，创建一个`loading.html`文件，插件会自动读取并注入。这个 html 可以自行定义样式和动画。
 
 ::: tip
 

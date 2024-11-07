@@ -53,7 +53,7 @@ const emit = defineEmits<{
 
 const router = useRouter();
 
-const [Form, { validate, getValues }] = useVbenForm(
+const [Form, formApi] = useVbenForm(
   reactive({
     commonConfig: {
       hideLabel: true,
@@ -61,12 +61,12 @@ const [Form, { validate, getValues }] = useVbenForm(
     },
     schema: computed(() => props.formSchema),
     showDefaultActions: false,
-  }),
+  })
 );
 
 async function handleSubmit() {
-  const { valid } = await validate();
-  const values = await getValues();
+  const { valid } = await formApi.validate();
+  const values = await formApi.getValues();
   if (valid) {
     emit('submit', {
       code: values?.code,
@@ -78,14 +78,16 @@ async function handleSubmit() {
 function goToLogin() {
   router.push(props.loginPath);
 }
+
+defineExpose({
+  getFormApi: () => formApi,
+});
 </script>
 
 <template>
   <div>
     <Title>
-      <slot name="title">
-        {{ title || $t('authentication.welcomeBack') }} 📲
-      </slot>
+      <slot name="title"> {{ title || $t('authentication.welcomeBack') }} 📲 </slot>
       <template #desc>
         <span class="text-muted-foreground">
           <slot name="subTitle">

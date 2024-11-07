@@ -5,9 +5,6 @@ import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
-import { useTitle } from '@vueuse/core';
-
-import { $t } from '#/locales';
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/store';
 
@@ -39,13 +36,6 @@ function setupCommonGuard(router: Router) {
     if (preferences.transition.progress) {
       stopProgress();
     }
-
-    // 动态修改标题
-    if (preferences.app.dynamicTitle) {
-      const { title } = to.meta;
-      // useTitle(`${$t(title)} - ${preferences.app.name}`);
-      useTitle(`${$t(title)} - ${preferences.app.name}`);
-    }
   });
 }
 
@@ -61,9 +51,7 @@ function setupAccessGuard(router: Router) {
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
-        return decodeURIComponent(
-          (to.query?.redirect as string) || DEFAULT_HOME_PATH,
-        );
+        return decodeURIComponent((to.query?.redirect as string) || DEFAULT_HOME_PATH);
       }
       return true;
     }

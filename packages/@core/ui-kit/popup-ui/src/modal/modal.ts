@@ -121,7 +121,7 @@ export interface ModalState extends ModalProps {
 
 export type ExtendedModalApi = {
   useStore: <T = NoInfer<ModalState>>(
-    selector?: (state: NoInfer<ModalState>) => T,
+    selector?: (state: NoInfer<ModalState>) => T
   ) => Readonly<Ref<T>>;
 } & ModalApi;
 
@@ -140,6 +140,11 @@ export interface ModalApiOptions extends ModalState {
    */
   onCancel?: () => void;
   /**
+   * 弹窗关闭动画结束的回调
+   * @returns
+   */
+  onClosed?: () => void;
+  /**
    * 点击确定按钮的回调
    */
   onConfirm?: () => void;
@@ -149,4 +154,9 @@ export interface ModalApiOptions extends ModalState {
    * @returns
    */
   onOpenChange?: (isOpen: boolean) => void;
+  /**
+   * 弹窗打开动画结束的回调
+   * @returns
+   */
+  onOpened?: () => void;
 }

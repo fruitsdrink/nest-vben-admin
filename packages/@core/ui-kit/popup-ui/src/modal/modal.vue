@@ -3,11 +3,7 @@ import type { ExtendedModalApi, ModalProps } from './modal';
 
 import { computed, nextTick, provide, ref, useId, watch } from 'vue';
 
-import {
-  useIsMobile,
-  usePriorityValues,
-  useSimpleLocale,
-} from '@vben-core/composables';
+import { useIsMobile, usePriorityValues, useSimpleLocale } from '@vben-core/composables';
 import { Expand, Shrink } from '@vben-core/icons';
 import {
   Dialog,
@@ -79,19 +75,11 @@ const {
   titleTooltip,
 } = usePriorityValues(props, state);
 
-const shouldFullscreen = computed(
-  () => (fullscreen.value && header.value) || isMobile.value,
-);
+const shouldFullscreen = computed(() => (fullscreen.value && header.value) || isMobile.value);
 
-const shouldDraggable = computed(
-  () => draggable.value && !shouldFullscreen.value && header.value,
-);
+const shouldDraggable = computed(() => draggable.value && !shouldFullscreen.value && header.value);
 
-const { dragging, transform } = useModalDraggable(
-  dialogRef,
-  headerRef,
-  shouldDraggable,
-);
+const { dragging, transform } = useModalDraggable(dialogRef, headerRef, shouldDraggable);
 
 watch(
   () => state?.value?.isOpen,
@@ -105,7 +93,7 @@ watch(
       const { offsetX, offsetY } = transform;
       dialogRef.value.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     }
-  },
+  }
 );
 
 watch(
@@ -117,7 +105,7 @@ watch(
         top: 0,
       });
     }
-  },
+  }
 );
 
 function handleFullscreen() {
@@ -162,11 +150,7 @@ function handleFocusOutside(e: Event) {
 }
 </script>
 <template>
-  <Dialog
-    :modal="false"
-    :open="state?.isOpen"
-    @update:open="() => modalApi?.close()"
-  >
+  <Dialog :modal="false" :open="state?.isOpen" @update:open="() => modalApi?.close()">
     <DialogContent
       ref="contentRef"
       :class="
@@ -176,11 +160,10 @@ function handleFocusOutside(e: Event) {
           {
             'border-border border': bordered,
             'shadow-3xl': !bordered,
-            'left-0 top-0 size-full max-h-full !translate-x-0 !translate-y-0':
-              shouldFullscreen,
+            'left-0 top-0 size-full max-h-full !translate-x-0 !translate-y-0': shouldFullscreen,
             'top-1/2 !-translate-y-1/2': centered && !shouldFullscreen,
             'duration-300': !dragging,
-          },
+          }
         )
       "
       :modal="modal"
@@ -188,10 +171,12 @@ function handleFocusOutside(e: Event) {
       :show-close="closable"
       close-class="top-3"
       @close-auto-focus="handleFocusOutside"
+      @closed="() => modalApi?.onClosed()"
       @escape-key-down="escapeKeyDown"
       @focus-outside="handleFocusOutside"
       @interact-outside="interactOutside"
       @open-auto-focus="handerOpenAutoFocus"
+      @opened="() => modalApi?.onOpened()"
       @pointer-down-outside="pointerDownOutside"
     >
       <DialogHeader
@@ -204,7 +189,7 @@ function handleFocusOutside(e: Event) {
               hidden: !header,
               'cursor-move select-none': shouldDraggable,
             },
-            headerClass,
+            headerClass
           )
         "
       >
@@ -237,11 +222,7 @@ function handleFocusOutside(e: Event) {
           })
         "
       >
-        <VbenLoading
-          v-if="showLoading"
-          class="size-full h-auto min-h-full"
-          spinning
-        />
+        <VbenLoading v-if="showLoading" class="size-full h-auto min-h-full" spinning />
         <slot></slot>
       </div>
 
@@ -263,7 +244,7 @@ function handleFocusOutside(e: Event) {
             {
               'border-t': bordered,
             },
-            footerClass,
+            footerClass
           )
         "
       >

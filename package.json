@@ -1,6 +1,6 @@
 {
   "name": "vben-admin-monorepo",
-  "version": "5.4.3",
+  "version": "5.4.4",
   "private": true,
   "keywords": [
     "monorepo",
@@ -100,7 +100,7 @@
   },
   "engines": {
     "node": ">=20.10.0",
-    "pnpm": ">=9.5.0"
+    "pnpm": ">=9.12.0"
   },
   "packageManager": "pnpm@9.12.3",
   "pnpm": {
@@ -110,6 +110,7 @@
       }
     },
     "overrides": {
+      "@ast-grep/napi": "catalog:",
       "@ctrl/tinycolor": "catalog:",
       "clsx": "catalog:",
       "pinia": "catalog:",

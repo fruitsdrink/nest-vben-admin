@@ -1,21 +1,10 @@
 <script lang="ts" setup>
 import type { VbenFormProps } from '@vben-core/form-ui';
-import type {
-  VxeGridInstance,
-  VxeGridProps as VxeTableGridProps,
-} from 'vxe-table';
+import type { VxeGridInstance, VxeGridProps as VxeTableGridProps } from 'vxe-table';
 
 import type { ExtendedVxeGridApi, VxeGridProps } from './types';
 
-import {
-  computed,
-  nextTick,
-  onMounted,
-  toRaw,
-  useSlots,
-  useTemplateRef,
-  watch,
-} from 'vue';
+import { computed, nextTick, onMounted, toRaw, useSlots, useTemplateRef, watch } from 'vue';
 
 import { usePriorityValues } from '@vben/hooks';
 import { EmptyIcon } from '@vben/icons';
@@ -40,6 +29,9 @@ interface Props extends VxeGridProps {
 const props = withDefaults(defineProps<Props>(), {});
 
 const FORM_SLOT_PREFIX = 'form-';
+
+const TOOLBAR_ACTIONS = 'toolbar-actions';
+const TOOLBAR_TOOLS = 'toolbar-tools';
 
 const gridRef = useTemplateRef<VxeGridInstance>('gridRef');
 
@@ -86,16 +78,13 @@ const showTableTitle = computed(() => {
 });
 
 const showToolbar = computed(() => {
-  return (
-    !!slots['toolbar-actions']?.() ||
-    !!slots['toolbar-tools']?.() ||
-    showTableTitle.value
-  );
+  return !!slots[TOOLBAR_ACTIONS]?.() || !!slots[TOOLBAR_TOOLS]?.() || showTableTitle.value;
 });
 
 const toolbarOptions = computed(() => {
-  const slotActions = slots['toolbar-actions']?.();
-  const slotTools = slots['toolbar-tools']?.();
+  const slotActions = slots[TOOLBAR_ACTIONS]?.();
+  const slotTools = slots[TOOLBAR_TOOLS]?.();
+
   if (!showToolbar.value) {
     return {};
   }
@@ -104,10 +93,8 @@ const toolbarOptions = computed(() => {
   return {
     toolbarConfig: {
       slots: {
-        ...(slotActions || showTableTitle.value
-          ? { buttons: 'toolbar-actions' }
-          : {}),
-        ...(slotTools ? { tools: 'toolbar-tools' } : {}),
+        ...(slotActions || showTableTitle.value ? { buttons: TOOLBAR_ACTIONS } : {}),
+        ...(slotTools ? { tools: TOOLBAR_TOOLS } : {}),
       },
     },
   };
@@ -117,17 +104,7 @@ const options = computed(() => {
   const globalGridConfig = VxeUI?.getConfig()?.grid ?? {};
 
   const mergedOptions: VxeTableGridProps = cloneDeep(
-    mergeWithArrayOverride(
-      {},
-      toolbarOptions.value,
-      toRaw(gridOptions.value),
-      globalGridConfig,
-      {
-        // toolbarConfig: {
-        //   tools: [],
-        // },
-      } as VxeTableGridProps,
-    ),
+    mergeWithArrayOverride({}, toolbarOptions.value, toRaw(gridOptions.value), globalGridConfig)
   );
 
   if (mergedOptions.proxyConfig) {
@@ -142,32 +119,16 @@ const options = computed(() => {
   }
 
   if (mergedOptions.pagerConfig) {
-    const mobileLayouts = [
-      'PrevJump',
-      'PrevPage',
-      'Number',
-      'NextPage',
-      'NextJump',
-    ] as any;
-    const layouts = [
-      'Total',
-      'Sizes',
-      'Home',
-      ...mobileLayouts,
-      'End',
-    ] as readonly string[];
-    mergedOptions.pagerConfig = mergeWithArrayOverride(
-      {},
-      mergedOptions.pagerConfig,
-      {
-        pageSize: 20,
-        background: true,
-        pageSizes: [10, 20, 30, 50, 100, 200],
-        className: 'mt-2 w-full',
-        layouts: isMobile.value ? mobileLayouts : layouts,
-        size: 'mini' as const,
-      },
-    );
+    const mobileLayouts = ['PrevJump', 'PrevPage', 'Number', 'NextPage', 'NextJump'] as any;
+    const layouts = ['Total', 'Sizes', 'Home', ...mobileLayouts, 'End'] as readonly string[];
+    mergedOptions.pagerConfig = mergeWithArrayOverride({}, mergedOptions.pagerConfig, {
+      pageSize: 20,
+      background: true,
+      pageSizes: [10, 20, 30, 50, 100, 200],
+      className: 'mt-2 w-full',
+      layouts: isMobile.value ? mobileLayouts : layouts,
+      size: 'mini' as const,
+    });
   }
   if (mergedOptions.formConfig) {
     mergedOptions.formConfig.enabled = false;
@@ -185,7 +146,7 @@ const delegatedSlots = computed(() => {
   const resultSlots: string[] = [];
 
   for (const key of Object.keys(slots)) {
-    if (!['empty', 'form', 'loading', 'toolbar-actions'].includes(key)) {
+    if (!['empty', 'form', 'loading', TOOLBAR_ACTIONS].includes(key)) {
       resultSlots.push(key);
     }
   }
@@ -209,7 +170,7 @@ async function init() {
   const defaultGridOptions: VxeTableGridProps = mergeWithArrayOverride(
     {},
     toRaw(gridOptions.value),
-    toRaw(globalGridConfig),
+    toRaw(globalGridConfig)
   );
   // 内部主动加载数据，防止form的默认值影响
   const autoLoad = defaultGridOptions.proxyConfig?.autoLoad;
@@ -220,9 +181,11 @@ async function init() {
 
   // form 由 vben-form代替，所以不适配formConfig，这里给出警告
   const formConfig = gridOptions.value?.formConfig;
-  if (formConfig) {
+  // 处理某个页面加载多个Table时，第2个之后的Table初始化报出警告
+  // 因为第一次初始化之后会把defaultGridOptions和gridOptions合并后缓存进State
+  if (formConfig && formConfig.enabled) {
     console.warn(
-      '[Vben Vxe Table]: The formConfig in the grid is not supported, please use the `formOptions` props',
+      '[Vben Vxe Table]: The formConfig in the grid is not supported, please use the `formOptions` props'
     );
   }
   props.api?.setState?.({ gridOptions: defaultGridOptions });
@@ -235,11 +198,7 @@ watch(
   formOptions,
   () => {
     formApi.setState((prev) => {
-      const finalFormOptions: VbenFormProps = mergeWithArrayOverride(
-        {},
-        formOptions.value,
-        prev,
-      );
+      const finalFormOptions: VbenFormProps = mergeWithArrayOverride({}, formOptions.value, prev);
       return {
         ...finalFormOptions,
         collapseTriggerResize: !!finalFormOptions.showCollapseButton,
@@ -248,7 +207,7 @@ watch(
   },
   {
     immediate: true,
-  },
+  }
 );
 
 onMounted(() => {
@@ -267,7 +226,7 @@ onMounted(() => {
           {
             'pt-0': showToolbar && !formOptions,
           },
-          gridClass,
+          gridClass
         )
       "
       v-bind="options"
@@ -287,11 +246,7 @@ onMounted(() => {
       </template>
 
       <!-- 继承默认的slot -->
-      <template
-        v-for="slotName in delegatedSlots"
-        :key="slotName"
-        #[slotName]="slotProps"
-      >
+      <template v-for="slotName in delegatedSlots" :key="slotName" #[slotName]="slotProps">
         <slot :name="slotName" v-bind="slotProps"></slot>
       </template>
 
@@ -305,10 +260,7 @@ onMounted(() => {
                 :key="slotName"
                 #[slotName]="slotProps"
               >
-                <slot
-                  :name="`${FORM_SLOT_PREFIX}${slotName}`"
-                  v-bind="slotProps"
-                ></slot>
+                <slot :name="`${FORM_SLOT_PREFIX}${slotName}`" v-bind="slotProps"></slot>
               </template>
               <template #reset-before="slotProps">
                 <slot name="reset-before" v-bind="slotProps"></slot>

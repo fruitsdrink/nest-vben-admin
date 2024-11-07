@@ -25,18 +25,12 @@ const props = withDefaults(
       showClose?: boolean;
     } & DialogContentProps
   >(),
-  { showClose: true },
+  { showClose: true }
 );
-const emits = defineEmits<{ close: [] } & DialogContentEmits>();
+const emits = defineEmits<{ close: []; closed: []; opened: [] } & DialogContentEmits>();
 
 const delegatedProps = computed(() => {
-  const {
-    class: _,
-    modal: _modal,
-    open: _open,
-    showClose: __,
-    ...delegated
-  } = props;
+  const { class: _, modal: _modal, open: _open, showClose: __, ...delegated } = props;
 
   return delegated;
 });
@@ -44,7 +38,13 @@ const delegatedProps = computed(() => {
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 
 const contentRef = ref<InstanceType<typeof DialogContent> | null>(null);
-
+function onAnimationEnd() {
+  if (props.open) {
+    emits('opened');
+  } else {
+    emits('closed');
+  }
+}
 defineExpose({
   getContentRef: () => contentRef.value,
 });
@@ -57,11 +57,12 @@ defineExpose({
     </Transition>
     <DialogContent
       ref="contentRef"
+      @animationend="onAnimationEnd"
       v-bind="forwarded"
       :class="
         cn(
           'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-top-[48%] fixed z-[1000] w-full p-6 shadow-lg outline-none sm:rounded-xl',
-          props.class,
+          props.class
         )
       "
     >
@@ -72,7 +73,7 @@ defineExpose({
         :class="
           cn(
             'data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-accent hover:text-accent-foreground text-foreground/80 flex-center absolute right-3 top-3 h-6 w-6 rounded-full px-1 text-lg opacity-70 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none',
-            props.closeClass,
+            props.closeClass
           )
         "
         @click="() => emits('close')"

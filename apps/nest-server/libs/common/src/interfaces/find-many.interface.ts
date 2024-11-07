@@ -3,7 +3,7 @@
  * @template TQuery 查询条件类型
  * @template TResult 查询结果类型
  */
-export interface FindManyService<TQuery, TResult> {
+export interface FindMany<TQuery, TResult> {
   /**
    * 查询多个
    * @param query 查询条件

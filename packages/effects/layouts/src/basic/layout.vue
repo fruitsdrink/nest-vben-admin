@@ -5,11 +5,7 @@ import { computed, useSlots, watch } from 'vue';
 
 import { useRefresh } from '@vben/hooks';
 import { $t } from '@vben/locales';
-import {
-  preferences,
-  updatePreferences,
-  usePreferences,
-} from '@vben/preferences';
+import { preferences, updatePreferences, usePreferences } from '@vben/preferences';
 import { useLockStore } from '@vben/stores';
 import { cloneDeep, mapTree } from '@vben/utils';
 import { VbenAdminLayout } from '@vben-core/layout-ui';
@@ -20,13 +16,7 @@ import { LayoutContent, LayoutContentSpinner } from './content';
 import { Copyright } from './copyright';
 import { LayoutFooter } from './footer';
 import { LayoutHeader } from './header';
-import {
-  LayoutExtraMenu,
-  LayoutMenu,
-  LayoutMixedMenu,
-  useExtraMenu,
-  useMixedMenu,
-} from './menu';
+import { LayoutExtraMenu, LayoutMenu, LayoutMixedMenu, useExtraMenu, useMixedMenu } from './menu';
 import { LayoutTabbar } from './tabbar';
 
 defineOptions({ name: 'BasicLayout' });
@@ -101,14 +91,8 @@ const {
   sidebarExtraVisible,
 } = useExtraMenu();
 
-const {
-  handleMenuSelect,
-  headerActive,
-  headerMenus,
-  sidebarActive,
-  sidebarMenus,
-  sidebarVisible,
-} = useMixedMenu();
+const { handleMenuSelect, headerActive, headerMenus, sidebarActive, sidebarMenus, sidebarVisible } =
+  useMixedMenu();
 
 function wrapperMenus(menus: MenuRecordRaw[]) {
   return mapTree(menus, (item) => {
@@ -138,7 +122,7 @@ watch(
         },
       });
     }
-  },
+  }
 );
 
 // 语言更新后，刷新页面
@@ -203,14 +187,8 @@ const headerSlots = computed(() => {
     </template>
     <!-- 头部区域 -->
     <template #header>
-      <LayoutHeader
-        :theme="theme"
-        @clear-preferences-and-logout="clearPreferencesAndLogout"
-      >
-        <template
-          v-if="!showHeaderNav && preferences.breadcrumb.enable"
-          #breadcrumb
-        >
+      <LayoutHeader :theme="theme" @clear-preferences-and-logout="clearPreferencesAndLogout">
+        <template v-if="!showHeaderNav && preferences.breadcrumb.enable" #breadcrumb>
           <Breadcrumb
             :hide-when-only-one="preferences.breadcrumb.hideOnlyOne"
             :show-home="preferences.breadcrumb.showHome"
@@ -276,11 +254,7 @@ const headerSlots = computed(() => {
       />
     </template>
     <template #side-extra-title>
-      <VbenLogo
-        v-if="preferences.logo.enable"
-        :text="preferences.app.name"
-        :theme="theme"
-      />
+      <VbenLogo v-if="preferences.logo.enable" :text="preferences.app.name" :theme="theme" />
     </template>
 
     <template #tabbar>
@@ -303,10 +277,7 @@ const headerSlots = computed(() => {
     <!-- 页脚 -->
     <template v-if="preferences.footer.enable" #footer>
       <LayoutFooter>
-        <Copyright
-          v-if="preferences.copyright.enable"
-          v-bind="preferences.copyright"
-        />
+        <Copyright v-if="preferences.copyright.enable" v-bind="preferences.copyright" />
       </LayoutFooter>
     </template>
 

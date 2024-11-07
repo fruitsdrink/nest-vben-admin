@@ -53,3 +53,30 @@ model SysSettings {
 
   @@map("sys_settings")
 }
+
+/// 系统部门
+model SysDepartment {
+  id     String  @id @default(cuid()) /// 主键Id
+  name   String /// 部门名称
+  pinyin String? /// 拼音简码
+  leader String? /// 部门领导
+  phone  String? /// 联系电话
+  email  String? /// 邮箱
+  remark String? /// 备注
+  sortNo Int     @default(0) @map("sort_no") /// 排序号
+  status Int     @default(1) /// 状态 1:启用 0:禁用
+
+  createdAt DateTime  @default(now()) @map("created_at") /// 创建时间
+  createdBy String?   @map("created_by") /// 创建人
+  updatedAt DateTime? @updatedAt @map("updated_at") /// 更新时间
+  updatedBy String?   @map("updated_by") /// 更新人
+  deletedAt BigInt    @default(0) @map("deleted_at") /// 删除时间
+  deletedBy String?   @map("deleted_by") /// 删除人
+
+  /// 上级部门
+  parentId String?         @map("parent_id")
+  parent   SysDepartment?  @relation("Parent", fields: [parentId], references: [id])
+  children SysDepartment[] @relation("Parent")
+
+  @@map("sys_department")
+}

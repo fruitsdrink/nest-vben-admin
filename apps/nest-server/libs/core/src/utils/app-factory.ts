@@ -8,6 +8,7 @@ import {
   NestInterceptor,
   NestMiddleware,
   PipeTransform,
+  ValidationPipe,
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import chalk from 'chalk';

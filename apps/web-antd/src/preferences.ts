@@ -11,6 +11,10 @@ export const overridesPreferences = defineOverridesPreferences({
     enableRefreshToken: true,
     loginExpiredMode: 'modal',
   },
+  logo: {
+    enable: true,
+    source: '/logo.png',
+  },
   theme: {
     mode: 'auto',
     radius: '0.25',

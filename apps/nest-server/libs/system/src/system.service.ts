@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SysAuthService, SysUserService, SysCacheService } from './modules';
+import { SysAuthService, SysUserService, SysCacheService, SysDepartmentService } from './modules';
 
 @Injectable()
 export class SystemService {
@@ -7,5 +7,6 @@ export class SystemService {
     public readonly auth: SysAuthService,
     public readonly user: SysUserService,
     public readonly cache: SysCacheService,
+    public readonly department: SysDepartmentService,
   ) {}
 }

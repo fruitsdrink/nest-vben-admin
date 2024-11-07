@@ -1,5 +1,5 @@
-import { BaseService, type FindManyService, type FindOneService } from '@app/common';
-import { PrismaService, type AppConfigService } from '@app/core';
+import { BaseService, type FindMany, type FindOne } from '@app/common';
+import { PrismaService } from '@app/core';
 import { Injectable } from '@nestjs/common';
 import { SysUser, type Prisma } from '@prisma/client';
 import type { FindManyDto } from './dtos';
@@ -7,7 +7,7 @@ import type { FindManyDto } from './dtos';
 @Injectable()
 export class SysUserService
   extends BaseService
-  implements FindOneService<SysUser | null>, FindManyService<FindManyDto, SysUser>
+  implements FindOne<SysUser | null>, FindMany<FindManyDto, SysUser>
 {
   constructor(private readonly prisma: PrismaService) {
     super();
@@ -25,7 +25,7 @@ export class SysUserService
     return { keyword, phone };
   }
 
-  findMany(query: FindManyDto): Promise<SysUser[]> {
+  async findMany(query: FindManyDto): Promise<SysUser[]> {
     const dto = this.validateFindMany(query);
     const { keyword, phone } = dto;
 
@@ -54,15 +54,15 @@ export class SysUserService
       where.phone = phone;
     }
 
-    return this.prisma.sysUser.findMany({
+    return await this.prisma.sysUser.findMany({
       where,
     });
   }
 
-  findOne(id: string): Promise<SysUser | null> {
+  async findOne(id: string): Promise<SysUser | null> {
     if (!id) {
       return null;
     }
-    return this.prisma.sysUser.findById(id);
+    return await this.prisma.sysUser.findById(id);
   }
 }
